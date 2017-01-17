@@ -1,5 +1,3 @@
-<!DOCTYPE HTML>
-<html>
 <head>
 	<title>Gsb - Accueil</title>
 	<meta charset="utf-8" />
