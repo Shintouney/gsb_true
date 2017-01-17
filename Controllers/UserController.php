@@ -19,9 +19,8 @@ class UserController extends Controller
             	$auth  = Auth::getInstance();
             	$user  = Utilisateur::findByLogin($_POST['login']);
 
-                if (!empty($user) && $auth->login($user, $_POST['mdp'])) {
-                    echo "mdp correct";
-                    die();
+                if ($user && $auth->login($user, $_POST['mdp'])) {
+                    $this->redirect();
                 }
                 else {
                     $this->redirect('?page=login&id=3');
