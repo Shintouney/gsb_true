@@ -6,7 +6,11 @@ require_once 'Models'.D_S.'Utilisateur.php';
 
 class HomeController extends Controller
 {
-
+    public function index()
+    {
+        $this->render('Home/index.php');
+    }
+    
     public function redirectLogin()
     {
         $this->redirect('?page=login&id=1');
