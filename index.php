@@ -15,7 +15,7 @@ if ($page != 'login' && (!isset($_SESSION['logged']) || $_SESSION['logged'] == f
 	$controller = 'HomeController';
 	$action     = 'redirectLogin';
 } else if ($page === 'login') {
-	$controller = 'LoginController';
+	$controller = 'UserController';
 } else if ($page) {
 	$controller = ucfirst($page).'Controller';
 } else {
