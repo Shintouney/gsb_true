@@ -9,7 +9,7 @@ class UserController extends Controller
         2 => 'Vous n\'avez spécifié aucun champ.',
         3 => 'Vos identifiants de connexion sont incorrect.');
 
-    public function index($id)
+    public function index($id = 1)
     {
         $auth  = new Auth();
         $bruno = new Utilisateur();
