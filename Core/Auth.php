@@ -27,7 +27,7 @@ class Auth
         session_regenerate_id();
         $_SESSION['auth']  = $id ? : $user->getId();
         $_SESSION['role']  = false === $user->getRole() ? 'ROLE_USER' : $user->getRole();
-        $_SESSION['user']  = unserialize(serialize($user));
+        $_SESSION['user']  = $user;
 
         return $_SESSION['logged'] = true;
     }

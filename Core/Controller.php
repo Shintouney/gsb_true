@@ -37,4 +37,62 @@ class Controller
         else
             return (array('login' => 'undefined'));
     }
+
+    /**
+    * retourne le mois au format aaaamm selon le jour dans le mois
+    * @param string $date au format jj/mm/aaaa
+    * @return string Le mois au format aaaamm
+    */
+    protected function getMois($date)
+    {
+        @list($jour, $mois, $annee) = explode('/', $date);
+        if (strlen($mois) == 1) {
+            $mois = "0" . $mois;
+        }
+        return $annee . $mois;
+    }
+
+    /**
+    * Retourne le mois suivant la date passée en paramètre au format aaaamm
+    * @param string $date au format aaaamm
+    * @param integer $nb nombre de mois à avancer
+    * @return string Le mois suivant ou en fonction de $nb au format aaaamm
+    */
+    protected function moisSuivant($date, $nb)
+    {
+        $date = $this->couperDate($date);
+        for ($i = 0; $i < $nb; $i++){
+            $date['mois'] = $date['mois']+1;
+            if (strlen($date['mois']) == 1) {
+                $date['mois'] = (int)"0" . $date['mois'];
+            }
+            if($date['mois'] == 13){
+                $date['mois'] = "01";
+                $date['annee'] = $date['annee']+1;
+            }
+        }
+        return $date['annee'] . $date['mois'];
+    }
+
+    /**
+    * Retourne le mois en toutes lettres d'un mois en chiffre
+    * @param integer $chiffreMois numéro du mois 
+    * @return string $mois le nom du mois en lettre
+    */
+    protected function retournerMoisLettre($chiffreMois) {
+        $mois        = array(1=>'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
+        $chiffreMois = (int)$chiffreMois;
+        return $mois[$chiffreMois];
+    }
+
+    /**
+    * Découpe la date en mois et année
+    * @param string $date au format aaaamm
+    * @return array $date un tableau contenant l'année et le mois
+    */
+    function couperDate($date){
+        $annee = substr($date,0,4);
+        $mois  = substr($date,4,6);
+        return $date = array('annee' => $annee,'mois' => $mois);
+    }
 }

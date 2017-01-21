@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Sam 21 Janvier 2017 à 17:02
+-- Généré le :  Sam 21 Janvier 2017 à 17:08
 -- Version du serveur :  10.1.19-MariaDB
 -- Version de PHP :  5.5.38
 
@@ -36954,6 +36954,16 @@ CREATE TABLE `etat` (
   `libelle` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Contenu de la table `etat`
+--
+
+INSERT INTO `etat` (`id`, `libelle`) VALUES
+('CL', 'Saisie clôturée'),
+('CR', 'Fiche créée, saisie en cours'),
+('RB', 'Remboursée'),
+('VA', 'Validée et mise en paiement');
+
 -- --------------------------------------------------------
 
 --
@@ -36980,6 +36990,16 @@ CREATE TABLE `fraisforfait` (
   `libelle` char(20) DEFAULT NULL,
   `montant` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `fraisforfait`
+--
+
+INSERT INTO `fraisforfait` (`id`, `libelle`, `montant`) VALUES
+('ETP', 'Forfait Etape', '110.00'),
+('KM', 'Frais Kilométrique', '0.62'),
+('NUI', 'Nuitée Hôtel', '80.00'),
+('REP', 'Repas Restaurant', '25.00');
 
 -- --------------------------------------------------------
 
