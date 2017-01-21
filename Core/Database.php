@@ -4,12 +4,14 @@
 # Utilise les services de la classe PDO
 # MobyDick Project
 # ~ L'appetit viens en mangeant
+# @version 1.0
+# -
 class Database
 {
     # Instance de Database
     private static $_instance = null;
 
-    // object pdo
+    # object pdo
     private $_gpdo;
 
     private function __construct()
@@ -23,7 +25,7 @@ class Database
                     PDO::ATTR_ERRMODE 			 => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_EMULATE_PREPARES   => false,
                 ];
-            $params = require 'Core'.D_S.'config.php';
+            $params      = require 'Core'.D_S.'config.php';
             $this->_gpdo = new PDO('mysql:host='.$params['host'].';dbname='.$params['db_name'], $params['user'], $params['password'], $options);
 
         }

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Auth.php';
+require_once 'Core'.D_S.'Database.php';
 
 class Controller
 {
@@ -24,8 +25,15 @@ class Controller
 
     protected function userData()
     {
-        if (isset($_SESSION['login']))
-            return (array('login' => $_SESSION['login']));
+        if (isset($_SESSION['user']) && isset($_SESSION['role']))
+        {
+            $user = unserialize(serialize($_SESSION['user']));
+            $role = unserialize(serialize($_SESSION['role']));
+            return (array('nom'    => $user->getNom(),
+                          'prenom' => $user->getPrenom(),
+                          'login'  => $user->getLogin(),
+                          'role'   => ucfirst($role->getLibelle())));
+        }
         else
             return (array('login' => 'undefined'));
     }

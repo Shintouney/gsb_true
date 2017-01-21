@@ -1,4 +1,11 @@
 <?php
+/**
+ * Fichier d'entrée de l'application
+ * Met en place le MVC
+ * @author  	 bruno et haitem
+ * @package 	 vendor (chargeur du pluging du mail)
+ * @version      1.0
+ */
 session_start();
 
 define('D_S', DIRECTORY_SEPARATOR);

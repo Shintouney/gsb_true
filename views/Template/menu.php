@@ -5,46 +5,41 @@
 		<!-- Menu -->
 			<nav id="menu">
 				<header class="major">
-					<h2>Menu</h2>
+					<h2>Applifrais</h2>
 				</header>
 				<ul>
-					<li><a href="index.html">Homepage</a></li>
-					<li><a href="generic.html">Generic</a></li>
-					<li><a href="elements.html">Elements</a></li>
+					<li><a href="index.php">Accueil</a></li>
+					<li><a href="index.php?page=frais">Saisie fiche de frais</a></li>
+					<li><a href="index.php">Mes fiches de frais</a></li>
+
+				</ul>
+				<br/>		
+				<header class="major">
+					<h2>Compte rendu</h2>
+				</header>
+				<ul>
+					<li><a href="index.php">Lien</a></li>
+					<li><a href="index.php">Lien</a></li>
+				</ul>
+				<br/>
+				<header class="major">
+					<h2>Administration</h2>
+				</header>
+				<ul>
 					<li>
-						<span class="opener">Submenu</span>
+						<span class="opener">Mon compte</span>
 						<ul>
-							<li><a href="#">Lorem Dolor</a></li>
-							<li><a href="#">Ipsum Adipiscing</a></li>
-							<li><a href="#">Tempus Magna</a></li>
-							<li><a href="#">Feugiat Veroeros</a></li>
+							<li><a class="icon fa-user" href="#"> Modifier ses informations</a></li>
+							<li><a class="icon fa-camera-retro" href="#"> Modifier son avatar</a></li>
+							<li><a class="icon fa-key" href="#"> Changer de mot de passe</a></li>
 						</ul>
 					</li>
-					<li><a href="#">Etiam Dolore</a></li>
-					<li><a href="#">Adipiscing</a></li>
-					<li>
-						<span class="opener">Another Submenu</span>
-						<ul>
-							<li><a href="#">Lorem Dolor</a></li>
-							<li><a href="#">Ipsum Adipiscing</a></li>
-							<li><a href="#">Tempus Magna</a></li>
-							<li><a href="#">Feugiat Veroeros</a></li>
-						</ul>
-					</li>
-					<li><a href="#">Maximus Erat</a></li>
-					<li><a href="#">Sapien Mauris</a></li>
-					<li><a href="#">Amet Lacinia</a></li>
 				</ul>
 			</nav>
 
-		<!-- Section -->
-			<section>
-				<header class="major">
-					<h2>Get in touch</h2>
-				</header>
 		<!-- Footer -->
 			<footer id="footer">
-				<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+				<p class="copyright">&copy; Gsb. HTML5 UP</a>.</p>
 			</footer>
 			</section>
 
