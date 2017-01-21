@@ -30,8 +30,13 @@ if (file_exists($path.$controller.'.php'))
 	require_once $path.$controller.'.php';
 	// instanciation du controller
 	$controller = new $controller();
-	// execution de la méthode
-	$id ? $controller->$action($id) : $controller->$action();
+	// On verifie si la méthode existe
+	if (method_exists($controller, $action)) {
+		// execution de la méthode
+		$id ? $controller->$action($id) : $controller->$action();
+	}
+	else
+		header('Location: ' . $_SERVER['HTTP_ORIGIN'].$_SERVER['SCRIPT_NAME'].'?page=error&id=4');
 }
 else
 	header('Location: ' . $_SERVER['HTTP_ORIGIN'].$_SERVER['SCRIPT_NAME'].'?page=error&id=2');
