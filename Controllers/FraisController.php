@@ -7,6 +7,6 @@ class FraisController extends Controller
 {
     public function index($id = 1)
     {
-        	$this->render('Frais/saisie_fiche.php', array('pageName' => 'Saisie fiche de frais'));
+       	$this->render('Frais/saisie_fiche.php', array('pageName' => 'Saisie fiche de frais'));
     }
 }

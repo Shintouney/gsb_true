@@ -39,7 +39,7 @@
 
 		<!-- Footer -->
 			<footer id="footer">
-				<p class="copyright">&copy; Gsb. HTML5 UP</a>.</p>
+				<p class="copyright">&copy; Gsb</a></p>
 			</footer>
 			</section>
 
