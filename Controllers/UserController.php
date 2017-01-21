@@ -12,6 +12,7 @@ class UserController extends Controller
     // action de connexion
     public function index($id = 1)
     {
+        $this->checkLogged();
         $error = $this->getError($id);
 
         if (isset($_POST['login']) && isset($_POST['mdp'])) {
@@ -38,7 +39,19 @@ class UserController extends Controller
     {
         if ($id == 1)
             return '';
+        else if(isset($this::$errors[$id]) == false)
+            return '';
         else
             return '<h2>Une erreur c\'est produite  </h2><p>'.$this::$errors[$id].'</p>';
+    }
+
+    /* Fonction qui redirige vers la page d'erreur,
+    *  Lorsqu'on est déjà connnecté et qu'on veut se diriger vers la page de login
+    */
+    private function checkLogged() 
+    {
+        $auth  = Auth::getInstance();
+        if ($auth->isLogged() == true)
+            $this->redirect('?page=errors&id=3');
     }
 }
