@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $this->render('Home/index.php');
+        $this->render('Home/index.php', array('pageName' => 'Accueil'));
     }
     
     public function redirectLogin()

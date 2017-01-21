@@ -24,12 +24,17 @@ if ($page != 'login' && notLogged()) {
     $action 	= 'index';
 }
 
-// inclusion du fichier controller avec require
-require_once $path.$controller.'.php';
-// instanciation du controller
-$controller = new $controller();
-// execution de la méthode
-$id ? $controller->$action($id) : $controller->$action();
+if (file_exists($path.$controller.'.php'))
+{
+	// inclusion du fichier controller avec require
+	require_once $path.$controller.'.php';
+	// instanciation du controller
+	$controller = new $controller();
+	// execution de la méthode
+	$id ? $controller->$action($id) : $controller->$action();
+}
+else
+	header('Location: ' . $_SERVER['HTTP_ORIGIN'].$_SERVER['SCRIPT_NAME'].'?page=error&id=2');
 
 function notLogged()
 {

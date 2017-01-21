@@ -4,7 +4,15 @@
 	<body>
 	<!-- Wrapper -->
 	<div id="wrapper">
-	<?php echo $content;?>
+	<!-- Main -->
+	<div id="main">
+		<div class="inner">
+	<?php
+	include 'header_corp.php';
+	echo $content;
+	?>
+		</div>
+	</div>
 	<?php include 'menu.php'; ?>
 	</div>
 	<!-- Scripts -->
@@ -13,6 +21,5 @@
 	<script src="js/util.js"></script>
 	<!--[if lte IE 8]><script src="js/ie/respond.min.js"></script><![endif]-->
 	<script src="js/main.js"></script>
-
 	</body>
 </html>

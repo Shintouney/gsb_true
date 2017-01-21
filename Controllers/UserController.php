@@ -52,6 +52,6 @@ class UserController extends Controller
     {
         $auth  = Auth::getInstance();
         if ($auth->isLogged() == true)
-            $this->redirect('?page=errors&id=3');
+            $this->redirect('?page=error&id=3');
     }
 }
