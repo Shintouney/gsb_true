@@ -119,4 +119,40 @@ class Controller
     function estEntierPositif($valeur) {
         return preg_match("/[^0-9]/", $valeur) == 0;
     }
+
+    /**
+    * Vérifie la validité du format d'une date française jj/mm/aaaa
+    * @param string $date valeur de date à vérifier 
+    * @return boolean $dateOK vrai ou faux
+    */
+    function estDateValide($date) {
+        $tabDate = explode('/', $date);
+        $dateOK = true;
+        if (count($tabDate) != 3) {
+            $dateOK = false;
+        } else {
+            if (!$this->estTableauEntiers($tabDate)) {
+                $dateOK = false;
+            } else {
+                if (!checkdate($tabDate[1], $tabDate[0], $tabDate[2])) {
+                    $dateOK = false;
+                }
+            }
+        }
+        return $dateOK;
+    }
+
+    /**
+    * Vérifie si une date est inférieure d'un an à la date actuelle
+    * @param string $dateTestee valeur de la date à comparer 
+    * @return boolean false ou true
+    */
+    function estDateDepassee($dateTestee) {
+        $dateActuelle = date("d/m/Y");
+        @list($jour, $mois, $annee) = explode('/', $dateActuelle);
+        $annee--;
+        $AnPasse = $annee . $mois . $jour;
+        @list($jourTeste, $moisTeste, $anneeTeste) = explode('/', $dateTestee);
+        return ($anneeTeste . $moisTeste . $jourTeste < $AnPasse);
+    }
 }

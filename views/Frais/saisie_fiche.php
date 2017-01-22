@@ -6,10 +6,10 @@
 </div>
 <form action="?page=frais&action=validerForfait" method="post">
 	<fieldset class='align-fieldset fieldset-auto-width'>
-		<legend>Eléments forfaitisés</legend>
+		<legend>&nbsp;<a class='icon fa-pencil-square-o'> Eléments forfaitisés</a>&nbsp;</legend>
 		<div class="align-center 4u">
 		<?php
-				foreach($lesFrais as $frais){
+				foreach($lesFrais as $frais) {
 				$id 	  = $frais['idfrais'];
 				$libelle  = $frais['libelle'];
 				$quantite = $frais['quantite'];
@@ -24,9 +24,17 @@
 				</div>
 				<?php
 				}
-				?>
+		?>
 		<hr>
-		<div class="12u$ align-center">
+		<?php
+			foreach ($errors as $error) {
+			?>
+				<div class="box">
+				<i class="icon icon-warning-sign"><?=$error;?></i></div>
+				<div class="12u$ align-center">
+			<?php
+			}
+		?>
 		<ul class="actions">
 			<li><input type="submit" value="Valider" class="special" /></li>
 			<li><input type="reset" value="Reset" /></li>
@@ -81,28 +89,28 @@
 		</tbody>
 	</table>
 </div>
-<form action="" method="post">
+<form action="?page=frais&action=validerCreationFrais" method="post">
 	<fieldset class='align-fieldset fieldset-auto-width'>
-		<legend>Nouvel élément hors forfait</legend>
+		<legend>&nbsp;<a class='icon fa-plus'> Nouvel élément hors forfait</a>&nbsp;	</legend>
 		<div class="align-center 4u">
 			<div class="row uniform">
 				<div class="6u 12u$(xsmall)">
 					<p class="align-right">Date (jj/mm/aaaa) :</p>
 				</div>
 				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="01/01/<?=$numAnnee;?>" maxlength="10"/>
+					<input type="text" name="dateFrais" placeholder="01/01/<?=$numAnnee;?>" maxlength="10"/>
 				</div>
 				<div class="6u 12u$(xsmall)">
 					<p class="align-right">Libellé :</p>
 				</div>
 				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" maxlength="256"/>
+					<input type="text" name="libelle" maxlength="256"/>
 				</div>
 				<div class="6u 12u$(xsmall)">
 					<p class="align-right">Montant :</p>
 				</div>
 				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="0" maxlength="10"/>
+					<input type="text" name="montant"  placeholder="0" maxlength="10"/>
 				</div>
 			</div>
 		</div>

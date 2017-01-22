@@ -4,7 +4,7 @@ require_once 'Core'.D_S.'Database.php';
 
 class Frais
 {
-    private static $db = NULL;
+    private static $db;
 
     /*
     * Constructeur qui init la base donnée
@@ -14,7 +14,7 @@ class Frais
         Frais::$db = Database::getInstance();
     }
 
-    // recupere ligne sql et genere/ retourne un objet a partir de l'id
+    // recupere ligne sql et genere retourne un objet a partir de l'id
     public static function find($id)
     {
         $data = Frais::$db->find($id, 'utilisateur');
@@ -42,14 +42,14 @@ class Frais
     }
 
     /**
-     * Crée une nouvelle fiche de frais et ses lignes de frais
-     * 
-     * Création d'une nouvelle fiche de frais et les lignes de frait au forfait pour un visiteur
-     * et un mois donnés. Récupère le dernier mois en cours de traitement, met à 'CL' son champs idEtat.
-     * Ensuite, création d'une nouvelle fiche de frais avec un idEtat à 'CR' et création des lignes
-     * de frais au forfait avec des quantités nulles 
-     * @param string $idUtilisateur Identifiant unique du visiteur
-     * @param sring $mois sous la forme aaaamm
+    * Crée une nouvelle fiche de frais et ses lignes de frais
+    * 
+    * Création d'une nouvelle fiche de frais et les lignes de frait au forfait pour un visiteur
+    * et un mois donnés. Récupère le dernier mois en cours de traitement, met à 'CL' son champs idEtat.
+    * Ensuite, création d'une nouvelle fiche de frais avec un idEtat à 'CR' et création des lignes
+    * de frais au forfait avec des quantités nulles 
+    * @param string $idUtilisateur Identifiant unique du visiteur
+    * @param sring $mois sous la forme aaaamm
     */
     public function creeNouvellesLignesFrais($idUtilisateur, $mois){
         $dernierMois     = $this->dernierMoisSaisi($idUtilisateur);
@@ -57,7 +57,7 @@ class Frais
         if($laDerniereFiche['idEtat']=='CR'){
             $this->majEtatFicheFrais($idUtilisateur, $dernierMois,'CL');
         }
-        $req = "INSERT INTO ficheFrais(idutilisateur,mois,nbJustificatifs,montantValide,dateModif,idEtat) 
+        $req = "INSERT INTO ficheFrais(idUtilisateur,mois,nbJustificatifs,montantValide,dateModif,idEtat) 
         VALUES('$idUtilisateur','$mois',0,0,now(),'CR')";
         Frais::$db->query($req);
         $lesIdFrais = $this->getLesIdFrais();
@@ -153,6 +153,49 @@ class Frais
             WHERE ligneFraisForfait.idUtilisateur = '$idUtilisateur' and ligneFraisForfait.mois = '$mois'
             AND ligneFraisForfait.idfraisforfait  = '$unIdFrais'";
             Frais::$db->query($req);
+        }
+    }
+
+    /**
+    * Retourne sous forme d'un tableau associatif toutes les lignes de frais hors forfait
+    * concernées par les deux arguments
+    * La boucle foreach ne peut être utilisée ici car on procède
+    * à une modification de la structure itérée - transformation du champ date-
+    * @param string $idUtilisateur Identifiant unique du visiteur
+    * @param numeric $mois sous la forme aaaamm
+    * @return array tous les champs des lignes de frais hors forfait sous la forme d'un tableau associatif 
+    */
+    public function getLesFraisHorsForfait($idUtilisateur, $mois){
+        $req = "SELECT situation.libelle As 'etat', ligneFraisHorsForfait.id, ligneFraisHorsForfait.date,
+            ligneFraisHorsForfait.libelle, ligneFraisHorsForfait.montant, ligneFraisHorsForfait.dateModif, ligneFraisHorsForfait.idEtat
+            FROM ligneFraisHorsForfait JOIN situation ON situation.id = ligneFraisHorsForfait.idEtat
+            WHERE ligneFraisHorsForfait.idUtilisateur ='$idUtilisateur' 
+            AND ligneFraisHorsForfait.mois = '$mois' ";
+        $res = Frais::$db->query($req, true);
+        $nbLignes = count($res);
+        for ($i=0; $i<$nbLignes; $i++){
+            $date = $res[$i]['date'];
+            $res[$i]['date'] =  $this->dateAnglaisVersFrancais($date, false);
+        }
+        return $res; 
+    }
+
+    /**
+    * Transforme une date au format format anglais aaaa-mm-jj vers le format français jj/mm/aaaa 
+    * @param string $madate au format aaaa-mm-jj
+    * @param boolean $hours Indique si true ou false $madate contient également l'heure
+    * @return string $date la date au format format français jj/mm/aaaa
+    */
+    function dateAnglaisVersFrancais($maDate, $hours) {
+        if($hours == true){
+            @list($maDate, $heure) = explode(' ', $maDate);
+        }
+        @list($annee, $mois, $jour) = explode('-', $maDate);
+        $date = "$jour" . "/" . $mois . "/" . $annee;
+        if ($hours == false) {
+            return $date;
+        } else {
+            return $date . " " . $heure ;
         }
     }
 }
