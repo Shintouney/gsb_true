@@ -198,4 +198,39 @@ class Frais
             return $date . " " . $heure ;
         }
     }
+
+    /**
+    * Crée un nouveau frais hors forfait pour un visiteur un mois donné
+    * à partir des informations fournies en paramètre
+    * @param $idUtilisateur
+    * @param $mois sous la forme aaaamm
+    * @param $libelle : le libelle du frais
+    * @param $date : la date du frais au format français jj//mm/aaaa
+    * @param $montant : le montant
+    */
+    public function creeNouveauFraisHorsForfait($idUtilisateur, $mois, $libelle, $date, $montant){
+        $dateFr = $this->dateFrancaisVersAnglais($date);
+        $req = "INSERT INTO ligneFraisHorsForfait 
+        VALUES('','$idUtilisateur','$mois','$libelle','$dateFr','$montant',now(), 'CR')";
+        Frais::$db->query($req);
+    }
+
+    /**
+    * Transforme une date au format français jj/mm/aaaa vers le format anglais aaaa-mm-jj
+    * @param string $madate au format jj/mm/aaaa
+    * @return date La date au format anglais aaaa-mm-jj
+    */
+    function dateFrancaisVersAnglais($maDate) {
+        @list($jour, $mois, $annee) = explode('/', $maDate);
+        return date('Y-m-d', mktime(0, 0, 0, $mois, $jour, $annee));
+    }
+
+    /**
+    * Supprime le frais hors forfait dont l'id est passé en paramètre
+    * @param integer $idFrais du frais à supprimer
+    */
+    public function supprimerFraisHorsForfait($idFrais){
+        $req = "DELETE FROM ligneFraisHorsForfait WHERE ligneFraisHorsForfait.id =$idFrais ";
+        Frais::$db->query($req);
+    }
 }

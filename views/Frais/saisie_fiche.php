@@ -25,16 +25,17 @@
 				<?php
 				}
 		?>
-		<hr>
 		<?php
 			foreach ($errors as $error) {
 			?>
+				<hr>
 				<div class="box">
-				<i class="icon icon-warning-sign"><?=$error;?></i></div>
-				<div class="12u$ align-center">
+				<i class="icon icon-warning-sign"><?=$error;?></i>
+				</div>
 			<?php
 			}
 		?>
+		<hr>
 		<ul class="actions">
 			<li><input type="submit" value="Valider" class="special" /></li>
 			<li><input type="reset" value="Reset" /></li>
@@ -43,7 +44,9 @@
 	 </fieldset>
 </form>
 
-
+<?php
+if (!empty($fraishf)){
+?>
 <h4>Descriptif des éléments hors forfait</h4>
 <div id="element-horsforfait" class="table-wrapper">
 	<table class="alt">
@@ -56,40 +59,39 @@
 			</tr>
 		</thead>
 		<tbody>
+<?php
+}
+else
+{
+	?>
+	<div class="box align-center">
+		<i class="icon icon-warning-sign">Il n'y a aucun element frais enregistré.</i>
+	</div>
+	<?php
+}
+?>
+		<?php
+		foreach($fraishf as $frais) {
+			?>
 			<tr>
-				<td>27/01/2017</td>
-				<td>Petit dejeuner.</td>
-				<td>29.99</td>
-				<td><a class='icon fa-trash-o' href="index.php"></a></td>
+				<td><?=$frais['date'];?></td>
+				<td><?=$frais['libelle'];?></td>
+				<td><?=$frais['montant'];?></td>
+				<td><a class='icon fa-trash-o' href="?page=frais&action=deleteFraisHf&id=<?=$frais['id'];?>"></a></td>
 			</tr>
-			<tr>
-				<td>27/01/2017</td>
-				<td>Petit dejeuner</td>
-				<td>19.99</td>
-				<td><a class='icon fa-trash-o' href="index.php"></a></td>
-			</tr>
-			<tr>
-				<td>27/01/2017</td>
-				<td> Morbi faucibus arcu accumsan lorem.</td>
-				<td>29.99</td>
-				<td><a class='icon fa-trash-o' href="index.php"></a></td>
-			</tr>
-			<tr>
-				<td>27/01/2017</td>
-				<td>Vitae integer tempus condimentum.</td>
-				<td>19.99</td>
-				<td><a class='icon fa-trash-o' href="index.php"></a></td>
-			</tr>
-			<tr>
-				<td>27/01/2017</td>
-				<td>Ante turpis integer aliquet porttitor.</td>
-				<td>29.99</td>
-				<td><a class='icon fa-trash-o' href="index.php"></a></td>
-			</tr>
+		<?php
+		}
+		?>
+<?php
+if (!empty($fraishf)){
+?>
 		</tbody>
 	</table>
 </div>
-<form action="?page=frais&action=validerCreationFrais" method="post">
+<?php
+}
+?>
+<form id="element-horsforfaitform" action="?page=frais&action=validerCreationFrais#element-horsforfaitform" method="post">
 	<fieldset class='align-fieldset fieldset-auto-width'>
 		<legend>&nbsp;<a class='icon fa-plus'> Nouvel élément hors forfait</a>&nbsp;	</legend>
 		<div class="align-center 4u">
@@ -113,7 +115,17 @@
 					<input type="text" name="montant"  placeholder="0" maxlength="10"/>
 				</div>
 			</div>
-		</div>
+			<?php
+			if (!empty($errorshf))
+				echo '<hr><div class="box">';
+			foreach ($errorshf as $error) {
+			?>
+				<i class="align-right icon icon-warning-sign"><strong>Attention !</strong> <?=$error;?></i><br/>
+			<?php
+			}
+			if (!empty($errorshf))
+				echo '</div>';
+		?>
 		<hr>
 		<div class="12u$ align-center">
 		<ul class="actions">

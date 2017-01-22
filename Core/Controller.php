@@ -155,4 +155,31 @@ class Controller
         @list($jourTeste, $moisTeste, $anneeTeste) = explode('/', $dateTestee);
         return ($anneeTeste . $moisTeste . $jourTeste < $AnPasse);
     }
+
+    /**
+    * Vérifie si une quote existe dans la chaine passée en paramètre
+    * et insère un caractère d'échapement devant s'il y en a.
+    * @param string $chaine à vérifier
+    * @return string nouvelle chaine
+    */
+    function replacequote($chaine){
+        // Vérifie si un caractère
+        $pos = strpos($chaine, "'");
+        if($pos === false){
+            $result = $chaine;
+        }else{
+            $result = str_replace("'", "\'", $chaine);
+        }
+        return $result;
+    }
+
+    /**
+    * Transforme une date au format français jj/mm/aaaa vers le format anglais aaaa-mm-jj
+    * @param string $madate au format jj/mm/aaaa
+    * @return date La date au format anglais aaaa-mm-jj
+    */
+    function dateFrancaisVersAnglais($maDate) {
+        @list($jour, $mois, $annee) = explode('/', $maDate);
+        return date('Y-m-d', mktime(0, 0, 0, $mois, $jour, $annee));
+    }
 }

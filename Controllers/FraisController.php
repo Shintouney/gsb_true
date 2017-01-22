@@ -10,14 +10,16 @@ class FraisController extends Controller
 	private static $frais;
 	private static $date;
     private static $errors;
+    private static $errorshorsforfait;
     
 
 	public function __construct()
     {
-        self::$user   = unserialize(serialize($_SESSION['user']));
-        self::$frais  = new Frais();
-        self::$date   = $this->returnDateInfo();
-        self::$errors = array();
+        self::$user              = unserialize(serialize($_SESSION['user']));
+        self::$frais             = new Frais();
+        self::$date              = $this->returnDateInfo();
+        self::$errors            = array();
+        self::$errorshorsforfait = array();
     }
 
     public function index()
@@ -26,19 +28,12 @@ class FraisController extends Controller
     		self::$frais->creeNouvellesLignesFrais(self::$user->getId(), self::$date['mois']);
         $lesFraisForfait     = self::$frais->getLesFraisForfait(self::$user->getId(), self::$date['mois']);
         $lesFraisHorsForfait = self::$frais->getLesFraisHorsForfait(self::$user->getId(), self::$date['mois']);
-       	$this->render('Frais/saisie_fiche.php', array_merge(array('pageName' => 'Saisie fiche de frais'),
-                                                            self::$date,  array('lesFrais' => $lesFraisForfait),
-                                                            array('errors' => self::$errors)));
-    }
-
-    private function returnDateInfo()
-    {
-    	$mois 	  = $this->getMois(date("d/m/Y"));
-    	$numDate  = $this->couperDate($mois);
-    	return (array('mois'     => $mois,
-    				  'numDate'  => $numDate,
-    				  'numAnnee' => substr($mois,0,4),
-    				  'numMois'  => $this->retournerMoisLettre($numDate['mois'])));
+       	$this->render('Frais/saisie_fiche.php', array_merge(array('pageName'  => 'Saisie fiche de frais'),
+                                                            array('errorshf'  => self::$errorshorsforfait),
+                                                            array('errors'    => self::$errors),
+                                                            array('fraishf'   => $lesFraisHorsForfait),
+                                                            array('lesFrais'  => $lesFraisForfait),
+                                                            self::$date));
     }
 
     public function validerForfait()
@@ -58,7 +53,48 @@ class FraisController extends Controller
 
     public function validerCreationFrais()
     {
+        if (empty($_POST))
+            $this->redirect('?page=frais');
         $this->valideInfosFrais($_REQUEST['dateFrais'], $_REQUEST['libelle'], $_REQUEST['montant']);
+        $libelle = $this->replacequote($_REQUEST['libelle']);
+        if (count(self::$errorshorsforfait) != 0)
+            $this->index();
+        else
+        {
+            self::$frais->creeNouveauFraisHorsForfait(self::$user->getId(), self::$date['mois'], $libelle, $_REQUEST['dateFrais'], $_REQUEST['montant']);
+            $this->index();
+        }
+    }
+
+    public function deleteFraisHf($id = NULL)
+    {
+        $lesFraisHorsForfait = self::$frais->getLesFraisHorsForfait(self::$user->getId(), self::$date['mois']);
+        if (isset($id) && $this->checkBeforeDelete($lesFraisHorsForfait, $id)) {
+            self::$frais->supprimerFraisHorsForfait($id);
+            $this->redirect('?page=frais#element-horsforfait');
+        }
+        else
+            $this->redirect('?page=frais');
+    }
+
+    private function checkBeforeDelete($lesFraisHorsForfait, $id)
+    {
+        foreach ($lesFraisHorsForfait as $frais)
+        {
+            if ($frais['id'] == $id)
+                return (true);
+        }
+        return false;
+    }
+
+    private function returnDateInfo()
+    {
+        $mois     = $this->getMois(date("d/m/Y"));
+        $numDate  = $this->couperDate($mois);
+        return (array('mois'     => $mois,
+                      'numDate'  => $numDate,
+                      'numAnnee' => substr($mois,0,4),
+                      'numMois'  => $this->retournerMoisLettre($numDate['mois'])));
     }
 
     /**
@@ -68,33 +104,38 @@ class FraisController extends Controller
     * @param string $libelle valeur de libelle à vérifier
     * @param float $montant valeur de montant à vérifier
     */
-    public function valideInfosFrais($dateFrais, $libelle, $montant) {
+    private function valideInfosFrais($dateFrais, $libelle, $montant) {
         if ($dateFrais == "") {
-            $this->addError(array("date" => "Le champ date ne doit pas être vide"));
+            $this->addErrorHorsForfait(array("date" => "Le champ date ne doit pas être vide"));
         } else {
             if (!$this->estDateValide($dateFrais)) {
-                $this->addError(array("date_invalide" => "Date invalide"));
+                $this->addErrorHorsForfait(array("date_invalide" => "Date invalide"));
             } else {
                 if ($this->estDateDepassee($dateFrais)) {
-                    $this->addError(array("date_year" => "Date d'enregistrement du frais dépassé, plus de 1 an"));
+                    $this->addErrorHorsForfait(array("date_year" => "Date d'enregistrement du frais dépassé, plus de 1 an"));
                 }
             }
         }
         if ($libelle == "") {
-            $this->addError(array("libelle" => "Le libelle ne peut pas être vide"));
+            $this->addErrorHorsForfait(array("libelle" => "Le libelle ne peut pas être vide"));
         }
         if ($montant == "") {
-            $this->addError(array("montant" => "Le champ montant ne peut pas être vide"));
+            $this->addErrorHorsForfait(array("montant" => "Le champ montant ne peut pas être vide"));
         } else {
             if (!is_numeric($montant)) {
-                $this->addError(array("montant_invalide" => "Le champ montant doit être numérique"));
+                $this->addErrorHorsForfait(array("montant_invalide" => "Le champ montant doit être numérique"));
             }
         }
     }
 
-    public function addError($errors)
+    private function addError($errors)
     {
         return self::$errors = array_merge($errors, self::$errors);
+    }
+
+    private function addErrorHorsForfait($errors)
+    {
+        return self::$errorshorsforfait = array_merge($errors, self::$errorshorsforfait);
     }
 
     /**
