@@ -95,4 +95,28 @@ class Controller
         $mois  = substr($date,4,6);
         return $date = array('annee' => $annee,'mois' => $mois);
     }
+
+    /**
+    * Indique si un tableau de valeurs est constitué d'entiers positifs ou nuls
+    * @param array $tabEntiers : le tableau
+    * @return boolean $ok vrai ou faux
+    */
+    function estTableauEntiers($tabEntiers) {
+        $ok = true;
+        foreach ($tabEntiers as $unEntier) {
+            if (!$this->estEntierPositif($unEntier)) {
+                $ok = false;
+            }
+        }
+        return $ok;
+    }
+
+    /**
+    * Indique si une valeur est un entier positif ou nul
+    * @param string $valeur valeur à vérifier
+    * @return boolean false ou true
+    */
+    function estEntierPositif($valeur) {
+        return preg_match("/[^0-9]/", $valeur) == 0;
+    }
 }

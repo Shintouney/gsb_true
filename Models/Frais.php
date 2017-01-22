@@ -120,4 +120,39 @@ class Frais
         $res = Frais::$db->query($req, true);
         return $res;
     }
+
+    /**
+    * Retourne sous forme d'un tableau associatif toutes les lignes de frais au forfait
+    * concernées par les deux arguments
+    * @param string $idVisiteur Identifiant unique du visiteur
+    * @param numeric $mois sous la forme aaaamm
+    * @return array l'id, le libelle et la quantité sous la forme d'un tableau associatif 
+    */
+    public function getLesFraisForfait($idUtilisateur, $mois){
+        $req = "SELECT fraisForfait.id AS idfrais, fraisForfait.libelle AS libelle, fraisForfait.montant AS montant,
+        ligneFraisForfait.quantite AS quantite FROM ligneFraisForfait INNER JOIN fraisForfait
+        ON fraisForfait.id = ligneFraisForfait.idfraisforfait 
+        WHERE ligneFraisForfait.idUtilisateur ='$idUtilisateur' AND ligneFraisForfait.mois='$mois' 
+        ORDER BY ligneFraisForfait.idfraisforfait"; 
+        $res = Frais::$db->query($req, true);
+        return $res; 
+    }
+
+    /**
+    * Met à jour la table ligneFraisForfait pour un visiteur et
+    * un mois donné en enregistrant les nouveaux montants
+    * @param string $idVisiteur Identifiant unique du visiteur
+    * @param string $mois sous la forme aaaamm
+    * @param aray $lesFrais tableau associatif de clé  idFrais et de valeur la quantité pour ce frais
+    */
+    public function majFraisForfait($idUtilisateur, $mois, $lesFrais){
+        $lesCles = array_keys($lesFrais);
+        foreach($lesCles as $unIdFrais){
+            $qte = $lesFrais[$unIdFrais];
+            $req = "UPDATE ligneFraisForfait SET ligneFraisForfait.quantite = $qte
+            WHERE ligneFraisForfait.idUtilisateur = '$idUtilisateur' and ligneFraisForfait.mois = '$mois'
+            AND ligneFraisForfait.idfraisforfait  = '$unIdFrais'";
+            Frais::$db->query($req);
+        }
+    }
 }

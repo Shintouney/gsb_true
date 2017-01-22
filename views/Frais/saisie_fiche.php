@@ -4,37 +4,27 @@
 <div class="box">
 <p>Renseigner ma fiche de frais du mois de <?=$numMois;?> <?=$numAnnee?> :</p>
 </div>
-<form action="" method="post">
+<form action="?page=frais&action=validerForfait" method="post">
 	<fieldset class='align-fieldset fieldset-auto-width'>
 		<legend>Eléments forfaitisés</legend>
 		<div class="align-center 4u">
-			<div class="row uniform">
-				<div class="6u 12u$(xsmall)">
-					<p class="align-right">Forfait Etape :</p>
+		<?php
+				foreach($lesFrais as $frais){
+				$id 	  = $frais['idfrais'];
+				$libelle  = $frais['libelle'];
+				$quantite = $frais['quantite'];
+				?>
+				<div class="row uniform">
+					<div class="6u 12u$(xsmall)">
+						<p class="align-right"><?=$libelle;?> :</p>
+					</div>
+					<div class="6u$ 12u$(xsmall)">
+						<input type="text" name="lesFrais[<?=$id;?>]" value="<?=$quantite?>" placeholder="0" maxlength="10"/>
+					</div>
 				</div>
-				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="0" maxlength="10"/>
-				</div>
-				<div class="6u 12u$(xsmall)">
-					<p class="align-right">Frais Kilométrique :</p>
-				</div>
-				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="0" maxlength="10"/>
-				</div>
-				<div class="6u 12u$(xsmall)">
-					<p class="align-right">Nuitée Hôtel :</p>
-				</div>
-				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="0" maxlength="10"/>
-				</div>
-				<div class="6u 12u$(xsmall)">
-					<p class="align-right">Repas Restaurant  :</p>
-				</div>
-				<div class="6u$ 12u$(xsmall)">
-					<input type="text" value="" placeholder="0" maxlength="10"/>
-				</div>
-				</div>
-			</div>
+				<?php
+				}
+				?>
 		<hr>
 		<div class="12u$ align-center">
 		<ul class="actions">
