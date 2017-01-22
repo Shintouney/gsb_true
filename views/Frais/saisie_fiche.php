@@ -65,7 +65,7 @@ else
 {
 	?>
 	<div class="box align-center">
-		<i class="icon icon-warning-sign">Il n'y a aucun element frais enregistré.</i>
+		<i class="icon icon-warning-sign">Il n'y a aucun element hors frais enregistré.</i>
 	</div>
 	<?php
 }
