@@ -233,4 +233,27 @@ class Frais
         $req = "DELETE FROM ligneFraisHorsForfait WHERE ligneFraisHorsForfait.id =$idFrais ";
         Frais::$db->query($req);
     }
+
+    /**
+    * Retourne les mois pour lesquel un visiteur a une fiche de frais
+    * @param string $idVisiteur Identifiant unique du visiteur
+    * @return array un tableau associatif de clé un mois -aaaamm- et de valeurs l'année et le mois correspondant 
+    */
+    public function getLesMoisDisponibles($idUtilisateur){
+        $req = "SELECT ficheFrais.mois AS mois FROM ficheFrais WHERE ficheFrais.idUtilisateur ='$idUtilisateur' 
+        ORDER BY ficheFrais.mois DESC ";
+        $lesLignes = Frais::$db->query($req, true);
+        $lesMois   = array();
+        foreach($lesLignes as $Ligne) {
+            $mois     = $Ligne['mois'];
+            $numAnnee = substr( $mois,0,4);
+            $numMois  = substr( $mois,4,2);
+            $lesMois["$mois"] = array(
+                "mois"      => "$mois",
+                "numAnnee"  => "$numAnnee",
+                "numMois"   => "$numMois"
+            );
+        }
+        return $lesMois;
+    }
 }

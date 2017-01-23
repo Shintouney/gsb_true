@@ -172,14 +172,4 @@ class Controller
         }
         return $result;
     }
-
-    /**
-    * Transforme une date au format français jj/mm/aaaa vers le format anglais aaaa-mm-jj
-    * @param string $madate au format jj/mm/aaaa
-    * @return date La date au format anglais aaaa-mm-jj
-    */
-    function dateFrancaisVersAnglais($maDate) {
-        @list($jour, $mois, $annee) = explode('/', $maDate);
-        return date('Y-m-d', mktime(0, 0, 0, $mois, $jour, $annee));
-    }
 }

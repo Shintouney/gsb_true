@@ -6,7 +6,7 @@
 			<p>Vous êtes connecté avec l'utilisateur: <strong><?=$login;?></strong></p>
 		</header>
 		<ul class="actions">
-			<li><a href="#" class="button big">Créer une fiche frais</a></li>
+			<li><a href="?page=frais" class="button big">Saisir fiche de frais</a></li>
 		</ul>
 	</div>
 	<span class="image object">

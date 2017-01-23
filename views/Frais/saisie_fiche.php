@@ -2,7 +2,7 @@
 <br/>
 <header>
 <div class="box">
-<p>Renseigner ma fiche de frais du mois de <?=$numMois;?> <?=$numAnnee?> :</p>
+<p>Renseigner ma fiche de frais du mois de <?=$date['numMois'];?> <?=$date['numAnnee']?> :</p>
 </div>
 <form action="?page=frais&action=validerForfait" method="post">
 	<fieldset class='align-fieldset fieldset-auto-width'>
@@ -100,7 +100,7 @@ if (!empty($fraishf)){
 					<p class="align-right">Date (jj/mm/aaaa) :</p>
 				</div>
 				<div class="6u$ 12u$(xsmall)">
-					<input type="text" name="dateFrais" placeholder="01/01/<?=$numAnnee;?>" maxlength="10"/>
+					<input type="text" name="dateFrais" placeholder="01/01/<?=$date['numAnnee']?>" maxlength="10"/>
 				</div>
 				<div class="6u 12u$(xsmall)">
 					<p class="align-right">Libellé :</p>

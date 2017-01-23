@@ -11,29 +11,61 @@ class FraisController extends Controller
 	private static $date;
     private static $errors;
     private static $errorshorsforfait;
-    
+    private static $lesMois;
+    private static $lesFraisForfait;
+    private static $lesFraisHorsForfait;
+    private static $lesInfosFicheFrais;
 
 	public function __construct()
     {
-        self::$user              = unserialize(serialize($_SESSION['user']));
-        self::$frais             = new Frais();
-        self::$date              = $this->returnDateInfo();
-        self::$errors            = array();
-        self::$errorshorsforfait = array();
+        self::$user                = unserialize(serialize($_SESSION['user']));
+        self::$frais               = new Frais();
+        self::$date                = $this->returnDateInfo();
+        self::$errors              = array();
+        self::$errorshorsforfait   = array();
+        self::$lesMois             = self::$frais->getLesMoisDisponibles(self::$user->getId());
+        self::$lesFraisForfait     = self::$frais->getLesFraisForfait(self::$user->getId(), self::$date['mois']);
+        self::$lesFraisHorsForfait = self::$frais->getLesFraisHorsForfait(self::$user->getId(), self::$date['mois']);
+        self::$lesInfosFicheFrais  = self::$frais->getLesInfosFicheFrais(self::$user->getId(), self::$date['mois']);
     }
 
     public function index()
     {
     	if (self::$frais->estPremierFraisMois(self::$user->getId(), self::$date['mois']))
     		self::$frais->creeNouvellesLignesFrais(self::$user->getId(), self::$date['mois']);
-        $lesFraisForfait     = self::$frais->getLesFraisForfait(self::$user->getId(), self::$date['mois']);
-        $lesFraisHorsForfait = self::$frais->getLesFraisHorsForfait(self::$user->getId(), self::$date['mois']);
-       	$this->render('Frais/saisie_fiche.php', array_merge(array('pageName'  => 'Saisie fiche de frais'),
-                                                            array('errorshf'  => self::$errorshorsforfait),
-                                                            array('errors'    => self::$errors),
-                                                            array('fraishf'   => $lesFraisHorsForfait),
-                                                            array('lesFrais'  => $lesFraisForfait),
-                                                            self::$date));
+       	$this->render('Frais/saisie_fiche.php', array('pageName'  => 'Saisie fiche de frais',
+                                                      'errorshf'  => self::$errorshorsforfait,
+                                                      'errors'    => self::$errors,
+                                                      'date'      => self::$date,
+                                                      'fraishf'   => self::$lesFraisHorsForfait,
+                                                      'lesFrais'  => self::$lesFraisForfait));
+    }
+
+    public function mesfiches()
+    {
+        $this->render('Frais/fiches_frais.php', array_merge(array('pageName'          => 'Mes fiches frais',
+                                                                  'moisASelectionner' => $this->moisSelect(self::$lesMois),
+                                                                  'lesMois'           => self::$lesMois)));
+    }
+
+    public function voirEtatFrais()
+    {
+        $numdate = $this->couperDate($this->moisSelect(self::$lesMois));
+        $this->render('Frais/fiches_frais.php', array('pageName'          => 'Mes fiches frais',
+                                                      'moisASelectionner' => $this->moisSelect(self::$lesMois),
+                                                      'lesMois'           => self::$lesMois,
+                                                      'fraishf'           => self::$lesFraisHorsForfait,
+                                                      'lesFrais'          => self::$lesFraisForfait,
+                                                      'infoFiche'         => self::$lesInfosFicheFrais,
+                                                      'dateModif'         => self::$frais->dateAnglaisVersFrancais(self::$lesInfosFicheFrais['dateModif'], false),
+                                                      'numDate'           => $numdate,
+                                                      'txtMois'           => $this->retournerMoisLettre($numdate['mois'])));
+    }
+
+    private function moisSelect($lesMois)
+    {
+        $lesCles = array_keys($lesMois);
+        return $lesCles[0];
     }
 
     public function validerForfait()
