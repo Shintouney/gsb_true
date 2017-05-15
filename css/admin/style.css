@@ -1,0 +1,39 @@
+fieldset label{
+    text-transform: uppercase;
+}
+
+ul.errors{
+    text-align: left;
+}
+a.special{
+    background-color: #f56a6a ;
+    color: #ffffff;
+    text-transform: uppercase;
+    border-radius: 0.375em;
+    font-size: 0.8em;
+    font-weight: 700;
+    height: 3.5em;
+    line-height: 3.5em;
+    padding: 0 2.25em;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    letter-spacing: 0.075em;
+    display:inline-block;
+}
+a.special:hover{
+    background-color: #f67878;
+    color: #fff!important;
+}
+a.special:active {
+    color: #fff!important;
+}
+legend{
+    padding: 0 10px;
+}
+fieldset{
+    padding-bottom: 20px;
+}
+table#users th{
+    text-transform: uppercase;
+}

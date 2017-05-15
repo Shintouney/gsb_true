@@ -21,9 +21,9 @@ body{
 	bottom: -40px;
 	width: auto;
 	height: auto;
-	background-image: url(../../img/background.jpg);
+	background-image: url(../../img/app/background.jpg);
 	background-size: cover;
-	-webkit-filter: blur(5px);
+	-webkit-filter: blur(2px);
 	z-index: 0;
 }
 
@@ -84,7 +84,7 @@ p{
 	z-index: 2;
 }
 
-.login input[type=text]{
+.login input[type=text], .main input[type=text]{
 	width: 250px;
 	height: 30px;
 	background: transparent;
@@ -97,7 +97,7 @@ p{
 	padding: 4px;
 }
 
-.login input[type=password]{
+.login input[type=password], .main input[type=password]{
 	width: 250px;
 	height: 30px;
 	background: transparent;
@@ -111,7 +111,7 @@ p{
 	margin-top: 10px;
 }
 
-.login input[type=submit]{
+.login input[type=submit], .main input[type=submit]{
 	width: 260px!important;
 	height: 35px;
 	background: #fff;
@@ -154,4 +154,56 @@ p{
 
 ::-moz-input-placeholder{
    color: rgba(255,255,255,0.6);
+}
+div.login  a:link, div.login a:visited{
+    color: white;
+    font-family: 'Exo', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+}
+div.login a:hover{
+    text-decoration: underline;
+}
+.main{
+    position: absolute;
+    top: calc(50% - 35px);
+    left: calc(50% - 255px);
+    z-index: 2;
+}
+
+.main div{
+    color: #fff;
+    font-family: 'Exo', sans-serif;
+    font-size: 35px;
+    font-weight: 200;
+}
+
+.main label{
+    color: ghostwhite !important;
+    text-shadow: 4px 4px 2px rgba(129, 129, 129, 1);
+    font-weight: 400;
+    font-family: 'Exo', sans-serif;
+    font-size: 80%;
+    width: 100%;
+    display:block;
+    text-align: center;
+}
+.main input[type=text], .main input[type=password]{
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.align-center {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+}
+div.center-text{
+   position: relative;
+    left: -18%;
+    display: block;
+    text-shadow: 4px 4px 2px rgba(129, 129, 129, 1);
+    z-index: 2;
+    font-weight: 400;
+    font-family: 'Exo', sans-serif;
+    color: ghostwhite !important;
 }

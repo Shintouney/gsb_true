@@ -1,0 +1,14 @@
+img.menu-logo{
+    width: 50%;
+    margin-left: 10%;
+}
+p.copyright{
+    margin-left: 20%;
+}
+footer#footer{
+    width: 100%;
+}
+nav#menu{
+    margin: 10px!important;
+    padding: 10px!important;
+}

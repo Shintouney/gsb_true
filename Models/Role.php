@@ -2,9 +2,9 @@
 
 class Role
 {
-    protected $id;
-    protected $nom;
-    protected $libelle;
+    private $id;
+    private $nom;
+    private $libelle;
 
     /**
      * @return integer
@@ -76,10 +76,10 @@ class Role
         return $model;
     }
 
-    public static function findBy($filter)
+    public static function findOneBy($filter)
     {
         $db = Database::getInstance();
-        $data = $db->findBy($filter, 'role');
+        $data = $db->findOneBy($filter, 'role');
         if (!$data) {
             return null;
         }

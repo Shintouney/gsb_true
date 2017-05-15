@@ -1,18 +1,24 @@
 <?php
 
 require_once 'Core'.D_S.'Database.php';
+require_once 'Core'.D_S.'Model.php';
 require_once 'Role.php';
+require_once 'Commune.php';
 
-class Utilisateur
+class Utilisateur extends Model
 {
     protected $id;
     protected $login;
-    protected $nom;
-    protected $prenom;
     protected $email;
     protected $mdp;
-    protected $token;
     protected $role;
+    protected $token;
+    protected $nom;
+    protected $prenom;
+    protected $telephone;
+    protected $adresse;
+    protected $commune;
+    protected $dateEmbauche;
 
     /**
      * @return string
@@ -79,6 +85,51 @@ class Utilisateur
         return $this->mdp;
     }
 
+
+    /**
+    * @return string
+    */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    public static function generateToken()
+    {
+        $token = hash('sha256', uniqid(mt_rand(), true), true);
+
+        return rtrim(strtr(base64_encode($token), '+/', '-_'), '=');
+    }
+
+    public function removeToken()
+    {
+        $this->token = null;
+    }
+
+    /**
+     * @param Role $role
+     */
+    public function setRole(Role $role)
+    {
+        $this->role = $role;
+    }
+
+    /**
+     * @return Role
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
     /**
      * @param string $nom
      */
@@ -120,47 +171,114 @@ class Utilisateur
     }
 
     /**
-    * @return string
-    */
-    public function getToken()
+     * @param string $adresse
+     */
+    public function setAdresse($adresse)
     {
-        return $this->token;
+        $this->adresse = $adresse;
     }
 
     /**
-     * @param string $token
+     * @return string
      */
-    public function setToken()
+    public function getAdresse()
     {
-        $token = hash('sha256', uniqid(mt_rand(), true), true);
-        $this->token =rtrim(strtr(base64_encode($token), '+/', '-_'), '=');
+        return $this->adresse;
     }
 
     /**
-     * @param Role $role
+     * @param mixed $commune
      */
-    public function setRole(Role $role)
+    public function setCommune(Commune $commune)
     {
+        $this->commune = $commune;
+    }
+
+    /**
+     * @return Commune
+     */
+    public function getCommune()
+    {
+        return $this->commune;
+    }
+
+    /**
+     * @param date $dateEmbauche
+     */
+    public function setDateEmbauche($dateEmbauche)
+    {
+        $this->dateEmbauche = $dateEmbauche;
+    }
+
+    /**
+     * @return date
+     */
+    public function getDateEmbauche($format = 'd/m/Y')
+    {
+        $date = new DateTime($this->dateEmbauche);
+        return $date->format($format);
+    }
+
+    /**
+     * @param string $telephone
+     */
+    public function setTelephone($telephone)
+    {
+        $this->telephone = $telephone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTelephone()
+    {
+        return $this->telephone;
+    }
+
+    public function isAdmin()
+    {
+        return $this->getRole()->getNom() === 'ROLE_ADMIN';
+    }
+
+    public function isVisiteur()
+    {
+        return $this->is ('ROLE_VISITEUR');
+    }
+
+    public function is($role)
+    {
+        if (is_array($role)) {
+            foreach ($role as $currentRole) {
+                if ($this->getRole()->getNom() === $currentRole) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return $this->getRole()->getNom() === $role;
+    }
+
+    // ----------------------------------------------------------------------------------------------
+
+
+
+    /*--------------------------Active record methods-----------------------------------*/
+
+
+    private function initRole($data)
+    {
+        $roleId = isset($data['role_id']) && $data['role_id'] ? $data['role_id'] : 1;
+        $role = Role::find($roleId);
         $this->role = $role;
     }
 
-    /**
-     * @return Role
-     */
-    public function getRole()
+    private function initCommune($data)
     {
-        return $this->role;
-    }
-
-    // hydrate un objet utilisateur a partir d'une table de hachage
-    public function setData($data)
-    {
-        if (is_array($data)) {
-            foreach ($data as $field => $value) {
-                if (!preg_match( '/_id$/', $field)) {
-                    $this->$field = $value;
-                }
-            }
+        if (isset($data['commune_id']) && $data['commune_id']) {
+            $communeId = $data['commune_id'] ;
+            $commune = Commune::find($communeId);
+            $this->setCommune($commune);
         }
     }
 
@@ -174,24 +292,24 @@ class Utilisateur
         }
         $model = new Utilisateur();
         $model->setData($data);
-        $role = Role::find($data['role_id']);
-        $model->setRole($role);
+        $model->initRole($data);
+        $model->initCommune($data);
 
     return $model;
     }
 
     // recupere ligne sql et genere/ retourne un objet champs de recherche a specifier
-    public static function findBy($filter)
+    public static function findOneBy($filter)
     {
         $db = Database::getInstance();
-        $data = $db->findBy($filter, 'utilisateur');
+        $data = $db->findOneBy($filter, 'utilisateur');
         if (!$data) {
             return null;
         }
         $model = new Utilisateur();
         $model->setData($data);
-        $role = Role::find($data['role_id']);
-        $model->setRole($role);
+        $model->initRole($data);
+        $model->initCommune($data);
 
         return $model;
     }
@@ -206,32 +324,31 @@ class Utilisateur
             $data = $model;
             $model = new Utilisateur();
             $model->setData($data);
-
-            $role = Role::find($data['role_id']);
-            $model->setRole($role);
+            $model->initRole($data);
+            $model->initCommune($data);
         }
 
         return $list;
     }
 
     // wrapper pour findBy 'login'
-    public static function findByLogin($login)
+    public static function findOneByLogin($login)
     {
-        return self::findBy(array('login' => $login), 'utilisateur');
+        return self::findOneBy(array('login' => $login), 'utilisateur');
     }
 
     // wrapper pour findBy 'email'
-    public static function findByEmail($email)
+    public static function findOneByEmail($email)
     {
-        return self::findBy(array('email' => $email), 'utilisateur');
+        return self::findOneBy(array('email' => $email), 'utilisateur');
     }
 
-    public static function findByLoginOrEmail($username)
+    public static function findOneByLoginOrEmail($username)
     {
         if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            return static::findByEmail($username);
+            return static::findOneByEmail($username);
         }
 
-        return static::findByLogin($username);
+        return static::findOneByLogin($username);
     }
 }

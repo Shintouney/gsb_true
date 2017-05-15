@@ -1,0 +1,6 @@
+select.datepick-month-year{
+    width: 50%;
+    -webkit-appearance: menulist;
+    appearance: menulist;
+   float: left;
+}

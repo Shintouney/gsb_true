@@ -1,175 +1,152 @@
-<?php
+<?php 
 
 require_once 'Auth.php';
-require_once 'Core'.D_S.'Database.php';
 
 class Controller
 {
-    protected function redirect($url = '')
+   protected function forbidden()
     {
-        // on cree l'url avecv  nom hote / fichier / requete http
-        $url = $_SERVER['HTTP_ORIGIN'].$_SERVER['SCRIPT_NAME'].$url;
-        header('Location: ' . $url);
+        $this->redirect('?action=error&id=4');
     }
 
-    protected function render($view, $vars = array(), $template = 'default')
+    protected function notFound()
+    {
+        $this->redirect('?action=error&id=2');
+    }
+
+    protected function redirect($url = '')
+    {
+        // on cree l'url avec  protocol //nom hote / index.php / requete http
+        $url = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'].$url;
+        header('Location: ' . $url);
+        die();
+    }
+
+    protected function render($view, $vars = array())
     {
         $vars = array_merge($vars, $this->userData());
         $view = str_replace('/', D_S, $view);
         ob_start();
+        $template = isset($vars['template']) ? $vars['template'] : 'default';
         extract($vars);
         require 'views'.D_S.$view;
         $content = ob_get_clean();
-        require 'views'.D_S.'Template'.D_S.$template.'.php';
+        require 'views'.D_S.'Template'.D_S.'base.php';
     }
 
     protected function userData()
     {
-        if (isset($_SESSION['user']) && isset($_SESSION['role']))
+        if (isset($_SESSION['user']))
         {
-            $user = unserialize(serialize($_SESSION['user']));
-            $role = unserialize(serialize($_SESSION['role']));
-            return (array('nom'    => $user->getNom(),
-                          'prenom' => $user->getPrenom(),
-                          'login'  => $user->getLogin(),
-                          'role'   => ucfirst($role->getLibelle())));
+            $user = unserialize($_SESSION['user']);
+            $role = $user->getRole()->getLibelle();
+            return (array(
+                'nom'    => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'login'  => $user->getLogin(),
+                'activeRole'   => ucfirst($role)));
         }
-        else
-            return (array('login' => 'undefined'));
+
+        return (array('login' => 'undefined'));
     }
 
-    /**
-    * retourne le mois au format aaaamm selon le jour dans le mois
-    * @param string $date au format jj/mm/aaaa
-    * @return string Le mois au format aaaamm
-    */
-    protected function getMois($date)
+    public function getUser()
     {
-        @list($jour, $mois, $annee) = explode('/', $date);
-        if (strlen($mois) == 1) {
-            $mois = "0" . $mois;
+        if (isset($_SESSION['user'])) {
+            return unserialize($_SESSION['user']);
         }
-        return $annee . $mois;
+
+        return false;
     }
 
-    /**
-    * Retourne le mois suivant la date passée en paramètre au format aaaamm
-    * @param string $date au format aaaamm
-    * @param integer $nb nombre de mois à avancer
-    * @return string Le mois suivant ou en fonction de $nb au format aaaamm
-    */
-    protected function moisSuivant($date, $nb)
+    protected function partial($view, $vars)
     {
-        $date = $this->couperDate($date);
-        for ($i = 0; $i < $nb; $i++){
-            $date['mois'] = $date['mois']+1;
-            if (strlen($date['mois']) == 1) {
-                $date['mois'] = (int)"0" . $date['mois'];
-            }
-            if($date['mois'] == 13){
-                $date['mois'] = "01";
-                $date['annee'] = $date['annee']+1;
-            }
+        $view = str_replace('/', D_S, $view);
+        extract($vars);
+        require 'views'.D_S.$view;
+    }
+
+    protected function filterAccess($role = 'ROLE_USER', $msg = 'Impossible d\'accéder à cette page!')
+    {
+        $auth = Auth::getInstance();
+
+        if (false === $auth->isGranted($role, $msg)) {
+            $this->forbidden($msg);
         }
-        return $date['annee'] . $date['mois'];
     }
 
-    /**
-    * Retourne le mois en toutes lettres d'un mois en chiffre
-    * @param integer $chiffreMois numéro du mois 
-    * @return string $mois le nom du mois en lettre
-    */
-    protected function retournerMoisLettre($chiffreMois) {
-        $mois        = array(1=>'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
-        $chiffreMois = (int)$chiffreMois;
-        return $mois[$chiffreMois];
+    /* rendu dans une variable */
+    protected function renderView($view, $parameters)
+    {
+        ob_start();
+        extract($parameters);
+        require $view;
+
+        return ob_get_clean();
     }
 
-    /**
-    * Découpe la date en mois et année
-    * @param string $date au format aaaamm
-    * @return array $date un tableau contenant l'année et le mois
-    */
-    function couperDate($date){
-        $annee = substr($date,0,4);
-        $mois  = substr($date,4,6);
-        return $date = array('annee' => $annee,'mois' => $mois);
-    }
-
-    /**
-    * Indique si un tableau de valeurs est constitué d'entiers positifs ou nuls
-    * @param array $tabEntiers : le tableau
-    * @return boolean $ok vrai ou faux
-    */
-    function estTableauEntiers($tabEntiers) {
-        $ok = true;
-        foreach ($tabEntiers as $unEntier) {
-            if (!$this->estEntierPositif($unEntier)) {
-                $ok = false;
+    // validation de formulaire retourne un message d'erreur pour chaque champ danss liste qui est vide
+    protected function validateBlank($list)
+    {
+        $errors = array();
+        $fields = $_POST;
+        $emptyMsg = 'champ obligatoire';
+        foreach ($fields as $field => $value) {
+            if(empty($value) &&  in_array($field, $list)) {
+                $errors[$field] = array();
+                $errors[$field][] = $emptyMsg;
             }
         }
-        return $ok;
+
+        return $errors;
     }
 
-    /**
-    * Indique si une valeur est un entier positif ou nul
-    * @param string $valeur valeur à vérifier
-    * @return boolean false ou true
-    */
-    function estEntierPositif($valeur) {
-        return preg_match("/[^0-9]/", $valeur) == 0;
+    // génere une url absolue
+    protected function url($link)
+    {
+        return   $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'].$link;
     }
 
-    /**
-    * Vérifie la validité du format d'une date française jj/mm/aaaa
-    * @param string $date valeur de date à vérifier 
-    * @return boolean $dateOK vrai ou faux
-    */
-    function estDateValide($date) {
-        $tabDate = explode('/', $date);
-        $dateOK = true;
-        if (count($tabDate) != 3) {
-            $dateOK = false;
-        } else {
-            if (!$this->estTableauEntiers($tabDate)) {
-                $dateOK = false;
-            } else {
-                if (!checkdate($tabDate[1], $tabDate[0], $tabDate[2])) {
-                    $dateOK = false;
-                }
+    // transforme un snakecase en phrase avec espaces
+    protected function humanize($string)
+    {
+        return ucfirst(str_replace('_', ' ', $string));
+    }
+
+
+    protected function validateUniques($list, $user = null)
+    {
+        $fields = $_POST;
+        $errors = array();
+        foreach ($list as $field) {
+            $method = 'findOneBy'.ucfirst($field);
+            $userExists = Utilisateur::$method($fields[$field]);
+            if($userExists && !$user || $userExists != $user) {
+                $errors[$field] = array();
+                $errors[$field][] = $this->humanize($field). " déja utilisé : veuillez en choisir un autre";
+            };
+        }
+
+        /*var_dump($loginExists && !$user || $loginExists != $user);
+        $emailExists = Utilisateur::findOneByEmail($fields['email']);
+        var_dump($emailExists && !$user || $emailExists != $user);*/
+
+        return $errors;
+    }
+
+    // validation de formulaire retourne un message d'erreur pour chaque champ danss liste qui est vide
+    protected function validatePasswordConfirmation()
+    {
+        $errors = array();
+        $fields = $_POST;
+        if (isset($fields['mdp']) && isset($fields['mdp_confirmation'])) {
+
+            if ($fields['mdp'] !== $fields['mdp_confirmation']) {
+                $errors = array('mdp' => array());
+                $errors['mdp'][] = 'Le mot de passe doit être identique dans le champ de confirmation';
             }
         }
-        return $dateOK;
-    }
 
-    /**
-    * Vérifie si une date est inférieure d'un an à la date actuelle
-    * @param string $dateTestee valeur de la date à comparer 
-    * @return boolean false ou true
-    */
-    function estDateDepassee($dateTestee) {
-        $dateActuelle = date("d/m/Y");
-        @list($jour, $mois, $annee) = explode('/', $dateActuelle);
-        $annee--;
-        $AnPasse = $annee . $mois . $jour;
-        @list($jourTeste, $moisTeste, $anneeTeste) = explode('/', $dateTestee);
-        return ($anneeTeste . $moisTeste . $jourTeste < $AnPasse);
-    }
-
-    /**
-    * Vérifie si une quote existe dans la chaine passée en paramètre
-    * et insère un caractère d'échapement devant s'il y en a.
-    * @param string $chaine à vérifier
-    * @return string nouvelle chaine
-    */
-    function replacequote($chaine){
-        // Vérifie si un caractère
-        $pos = strpos($chaine, "'");
-        if($pos === false){
-            $result = $chaine;
-        }else{
-            $result = str_replace("'", "\'", $chaine);
-        }
-        return $result;
+        return $errors;
     }
 }
